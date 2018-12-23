@@ -1,44 +1,37 @@
 # -*- coding: utf-8 -*-
-import hashlib
 import base64
+import hashlib
 
-from lxml import etree
 import requests
+from lxml import etree
 
 
-class SolicitaDescarga():
-    SOAP_URL = 'https://cfdidescargamasivasolicitud.clouda.sat.gob.mx/SolicitaDescargaService.svc'
-    SOAP_ACTION = 'http://DescargaMasivaTerceros.sat.gob.mx/ISolicitaDescargaService/SolicitaDescarga'
+class DescargaMasiva():
+    SOAP_URL = 'https://cfdidescargamasiva.clouda.sat.gob.mx/DescargaMasivaService.svc'
+    SOAP_ACTION = 'http://DescargaMasivaTerceros.sat.gob.mx/IDescargaMasivaTercerosService/Descargar'
     NSMAP = {
         's': 'http://schemas.xmlsoap.org/soap/envelope/',
         'des': 'http://DescargaMasivaTerceros.sat.gob.mx',
         'xd': 'http://www.w3.org/2000/09/xmldsig#'
-    }
-
+    }    
+    
     def __init__(self, fiel):
         self.fiel = fiel
-    
-    def __generar_soapreq__(self, rfc_solicitante, fecha_inicial, fecha_final, rfc_emisor, rfc_receptor, tipo_solicitud):
+
+    def __generar_soapreq__(self, rfc_solicitante, id_paquete):
         soap_req = etree.Element('{{{}}}{}'.format(self.NSMAP['s'], 'Envelope'), nsmap=self.NSMAP)
         
         etree.SubElement(soap_req, '{{{}}}{}'.format(self.NSMAP['s'], 'Header'))
 
         body = etree.SubElement(soap_req, '{{{}}}{}'.format(self.NSMAP['s'], 'Body'))
 
-        solicitadescarga = etree.SubElement(body, '{{{}}}{}'.format(self.NSMAP['des'], 'SolicitaDescarga'))
+        peticiondescarga = etree.SubElement(body, '{{{}}}{}'.format(self.NSMAP['des'], 'PeticionDescargaMasivaTercerosEntrada'))
 
-        solicitud = etree.SubElement(solicitadescarga, '{{{}}}{}'.format(self.NSMAP['des'], 'solicitud'))
-        solicitud.set('RfcSolicitante', rfc_solicitante)
-        solicitud.set('FechaFinal', fecha_final.strftime('%Y-%m-%dT%H:%M:%S.%fZ'))
-        solicitud.set('FechaInicial', fecha_inicial.strftime('%Y-%m-%dT%H:%M:%S.%fZ'))
-        solicitud.set('TipoSolicitud', tipo_solicitud)
-        if rfc_emisor is not None:
-            solicitud.set('RfcEmisor', rfc_emisor)
+        peticion_descarga = etree.SubElement(peticiondescarga, '{{{}}}{}'.format(self.NSMAP['des'], 'peticionDescarga'))
+        peticion_descarga.set('IdPaquete', id_paquete)
+        peticion_descarga.set('RfcSolicitante', rfc_solicitante)
         
-        if rfc_receptor is not None:
-            solicitud.set('RfcReceptor', rfc_receptor)
-        
-        signature = etree.SubElement(solicitud, 'Signature', nsmap={None: 'http://www.w3.org/2000/09/xmldsig#'})
+        signature = etree.SubElement(peticion_descarga, 'Signature', nsmap={None: 'http://www.w3.org/2000/09/xmldsig#'})
 
         signedinfo = etree.SubElement(signature, 'SignedInfo', nsmap={None: 'http://www.w3.org/2000/09/xmldsig#'})
 
@@ -75,14 +68,14 @@ class SolicitaDescarga():
         
         x509certificate = etree.SubElement(x509data, 'X509Certificate')
 
-        to_digest = etree.tostring(solicitadescarga, method='c14n', exclusive=1)
+        to_digest = etree.tostring(peticiondescarga, method='c14n', exclusive=1)
 
         digest = base64.b64encode(hashlib.new('sha1', to_digest).digest())
         
         digestvalue.text = digest
 
         to_sign = etree.tostring(signedinfo, method='c14n', exclusive=1)
-
+        
         firma = self.fiel.firmar_sha1(to_sign)
 
         signaturevalue.text = firma
@@ -95,14 +88,9 @@ class SolicitaDescarga():
         
         return etree.tostring(soap_req)
     
-    def solicitar_descarga(
-            self, token, rfc_solicitante, fecha_inicial, fecha_final,
-            rfc_emisor=None, rfc_receptor=None, tipo_solicitud='CFDI'
-        ):
+    def descargar_paquete(self, token, rfc_solicitante, id_paquete):
         
-        soapreq = self.__generar_soapreq__(
-            rfc_solicitante, fecha_inicial, fecha_final, rfc_emisor, rfc_receptor, tipo_solicitud
-        )
+        soapreq = self.__generar_soapreq__(rfc_solicitante, id_paquete)
 
         headers = {
             'Content-type': 'text/xml;charset="utf-8"',
@@ -125,22 +113,23 @@ class SolicitaDescarga():
         if not response.text.startswith('<s:Envelope'):
             ex = 'El webservice Autenticacion responde: {}'.format(response.text)
             raise Exception(ex)
-
+        
         nsmap= {
             's': 'http://schemas.xmlsoap.org/soap/envelope/',
+            'h': 'http://DescargaMasivaTerceros.sat.gob.mx',
             None: 'http://DescargaMasivaTerceros.sat.gob.mx'
         }
 
         resp_xml = etree.fromstring(response.text)
 
-        f_val = 's:Body/SolicitaDescargaResponse/SolicitaDescargaResult'
+        respuesta = resp_xml.find('s:Header/h:respuesta', namespaces=nsmap)
 
-        s_d_r = resp_xml.find(f_val, namespaces=nsmap)
+        paquete = resp_xml.find('s:Body/RespuestaDescargaMasivaTercerosSalida/Paquete', namespaces=nsmap)
 
         ret_val = {
-            'id_solicitud': s_d_r.get('IdSolicitud'),
-            'cod_estatus': s_d_r.get('CodEstatus'),
-            'mensaje': s_d_r.get('Mensaje')
+            'cod_estatus': respuesta.get('CodEstatus'),
+            'mensaje': respuesta.get('Mensaje'),
+            'paquete_b64': paquete.text,
         }
 
         return ret_val

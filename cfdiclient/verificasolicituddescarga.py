@@ -5,8 +5,6 @@ import hashlib
 import requests
 from lxml import etree
 
-from cfdiclient.fiel import Fiel
-
 
 class VerificaSolicitudDescarga():
     SOAP_URL = 'https://cfdidescargamasivasolicitud.clouda.sat.gob.mx/VerificaSolicitudDescargaService.svc'
@@ -15,9 +13,12 @@ class VerificaSolicitudDescarga():
         's': 'http://schemas.xmlsoap.org/soap/envelope/',
         'des': 'http://DescargaMasivaTerceros.sat.gob.mx',
         'xd': 'http://www.w3.org/2000/09/xmldsig#'
-    }    
+    }
+
+    def __init__(self, fiel):
+        self.fiel = fiel
     
-    def __generar_soapreq__(self, cer_der, key_der, passphrase, rfc_solicitante, id_solicitud):
+    def __generar_soapreq__(self, rfc_solicitante, id_solicitud):
         soap_req = etree.Element('{{{}}}{}'.format(self.NSMAP['s'], 'Envelope'), nsmap=self.NSMAP)
         
         etree.SubElement(soap_req, '{{{}}}{}'.format(self.NSMAP['s'], 'Header'))
@@ -75,23 +76,21 @@ class VerificaSolicitudDescarga():
 
         to_sign = etree.tostring(signedinfo, method='c14n', exclusive=1)
         
-        fiel = Fiel(cer_der, key_der, passphrase)
-
-        firma = fiel.firmar(to_sign)
+        firma = self.fiel.firmar_sha1(to_sign)
 
         signaturevalue.text = firma
 
-        x509certificate.text = fiel.cer_to_base64()
+        x509certificate.text = self.fiel.cer_to_base64()
 
-        x509issuername.text = fiel.cer_issuer()
+        x509issuername.text = self.fiel.cer_issuer()
 
-        x509serialnumber.text = fiel.cer_serial_number()
+        x509serialnumber.text = self.fiel.cer_serial_number()
         
-        return etree.tostring(soap_req, pretty_print=True)
+        return etree.tostring(soap_req)
     
-    def verificar_descarga(self, cer_der, key_der, passphrase, token, rfc_solicitante, id_solicitud):
+    def verificar_descarga(self, token, rfc_solicitante, id_solicitud):
         
-        soapreq = self.__generar_soapreq__(cer_der, key_der, passphrase, rfc_solicitante, id_solicitud)
+        soapreq = self.__generar_soapreq__(rfc_solicitante, id_solicitud)
 
         headers = {
             'Content-type': 'text/xml;charset="utf-8"',
@@ -103,7 +102,7 @@ class VerificaSolicitudDescarga():
 
         response = requests.post(self.SOAP_URL, data=soapreq, headers=headers)
 
-        if response.status_code != requests.codes.ok:
+        if response.status_code != requests.codes['ok']:
             if not response.text.startswith('<s:Envelope'):
                 ex = 'El webservice Autenticacion responde: {}'.format(response.text)
             else:

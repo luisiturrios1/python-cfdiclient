@@ -7,8 +7,6 @@ import uuid
 import requests
 from lxml import etree
 
-from cfdiclient.fiel import Fiel
-
 
 class Autenticacion():
     SOAP_URL = 'https://cfdidescargamasivasolicitud.clouda.sat.gob.mx/Autenticacion/Autenticacion.svc'
@@ -20,8 +18,11 @@ class Autenticacion():
     S_NSMAP = {
         'o': 'http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd'
     }
+
+    def __init__(self, fiel):
+        self.fiel = fiel
     
-    def __generar_soapreq__(self, cer_der, key_der, passphrase, id):
+    def __generar_soapreq__(self, id):
         date_created = datetime.utcnow()
         date_expires = date_created + timedelta(seconds=300)
         date_created = date_created.strftime('%Y-%m-%dT%H:%M:%S.%fZ')
@@ -92,19 +93,18 @@ class Autenticacion():
         digestvalue.text = digest
 
         to_sign = etree.tostring(signedinfo, method='c14n', exclusive=1)
-        
-        fiel = Fiel(cer_der, key_der, passphrase)
 
-        firma = fiel.firmar(to_sign)
+        firma = self.fiel.firmar_sha1(to_sign)
 
         signaturevalue.text = firma
 
-        binarysecuritytoken.text = fiel.cer_to_base64()
+        binarysecuritytoken.text = self.fiel.cer_to_base64()
 
         return etree.tostring(soap_req)
 
-    def obtener_token(self, cer_der, key_der, passphrase, id=uuid.uuid4()):
-        soapreq = self.__generar_soapreq__(cer_der, key_der, passphrase, id=id)
+    def obtener_token(self, id=uuid.uuid4()):
+        
+        soapreq = self.__generar_soapreq__(id)
 
         headers = {
             'Content-type': 'text/xml;charset="utf-8"',
@@ -115,7 +115,7 @@ class Autenticacion():
 
         response = requests.post(self.SOAP_URL, data=soapreq, headers=headers)
 
-        if response.status_code != requests.codes.ok:
+        if response.status_code != requests.codes['ok']:
             if not response.text.startswith('<s:Envelope'):
                 ex = 'El webservice Autenticacion responde: {}'.format(response.text)
             else:
