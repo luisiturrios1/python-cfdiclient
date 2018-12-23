@@ -51,7 +51,7 @@ fiel_cer_der = open(FIEL_CER, 'rb').read()
 fiel_key_der = open(FIEL_KEY, 'rb').read()
 
 ver_des = VerificaSolicitudDescarga()
-resp = ver_des.solicitar_descarga(fiel_cer_der, fiel_key_der, FIEL_PAS,  token, 'XAXX010101000', 'a4897f62-a279-4f52-bc35-03bde4081627')
+resp = ver_des.verificar_descarga(fiel_cer_der, fiel_key_der, FIEL_PAS,  token, 'XAXX010101000', 'a4897f62-a279-4f52-bc35-03bde4081627')
 
 print(resp)
 # {'estado_solicitud': '3', 'numero_cfdis': '8', 'cod_estatus': '5000', 'paquetes': ['a4897f62-a279-4f52-bc35-03bde4081627_01'], 'codigo_estado_solicitud': '5000', 'mensaje': 'Solicitud Aceptada'}

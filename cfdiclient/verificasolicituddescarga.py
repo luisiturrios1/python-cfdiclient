@@ -89,7 +89,7 @@ class VerificaSolicitudDescarga():
         
         return etree.tostring(soap_req, pretty_print=True)
     
-    def solicitar_descarga(self, cer_der, key_der, passphrase, token, rfc_solicitante, id_solicitud):
+    def verificar_descarga(self, cer_der, key_der, passphrase, token, rfc_solicitante, id_solicitud):
         
         soapreq = self.__generar_soapreq__(cer_der, key_der, passphrase, rfc_solicitante, id_solicitud)
 
