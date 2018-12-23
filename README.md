@@ -42,7 +42,6 @@ print(sol_descarga)
 
 ### Verifica Solicitud Descarga
 ```python
-import datetime
 from cfdiclient import VerificaSolicitudDescarga
 
 FIEL_KEY = 'XAXX010101000.key'
