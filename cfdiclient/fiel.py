@@ -4,6 +4,7 @@ import base64
 from Crypto.Hash import SHA
 from Crypto.PublicKey import RSA
 from Crypto.Signature import PKCS1_v1_5
+from OpenSSL import crypto
 
 
 class Fiel():
@@ -12,7 +13,7 @@ class Fiel():
         self.__importar_key__(key_der, passphrase)
 
     def __importar_cer__(self, cer_der):
-        self.cer = cer_der
+        self.cer = crypto.load_certificate(crypto.FILETYPE_ASN1, cer_der)
 
     def __importar_key__(self, key_der, passphrase):
         # Importar KEY
@@ -30,4 +31,16 @@ class Fiel():
         return b64_firma
 
     def cer_to_base64(self):
-        return base64.b64encode(self.cer)
+        cer = crypto.dump_certificate(crypto.FILETYPE_ASN1, self.cer)
+        return base64.b64encode(cer)
+
+    def cer_issuer(self):
+        d = self.cer.get_issuer().get_components()
+        datos = ''
+        for t in d:
+            datos += '{}={},'.format(t[0], t[1])
+        return datos[:-1].decode('utf8')
+    
+    def cer_serial_number(self):
+        serial = self.cer.get_serial_number()
+        return str(serial)
