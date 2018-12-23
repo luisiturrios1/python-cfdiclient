@@ -40,7 +40,7 @@ print(sol_descarga)
 # {'mensaje': 'Solicitud Aceptada', 'cod_estatus': '5000', 'id_solicitud': 'be2a3e76-684f-416a-afdf-0f9378c346be'}
 ```
 
-### Solicita Descarga
+### Verifica Solicitud Descarga
 ```python
 import datetime
 from cfdiclient import VerificaSolicitudDescarga
