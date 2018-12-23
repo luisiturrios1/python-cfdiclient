@@ -19,3 +19,23 @@ a = Autenticacion()
 token = a.obtener_token(fiel_cer_der, fiel_key_der, FIEL_PAS)
 print(token)
 ```
+### Solicita Descarga
+```python
+import datetime
+from cfdiclient import SolicitaDescarga
+
+FIEL_KEY = 'XAXX010101000.key'
+FIEL_CER = 'XAXX010101000.cer'
+FIEL_PAS = 'contrasena_fiel'
+fiel_cer_der = open(FIEL_CER, 'rb').read()
+fiel_key_der = open(FIEL_KEY, 'rb').read()
+
+fecha_inicial = datetime.datetime(2018, 1, 2)
+fecha_final = datetime.datetime(2018, 12, 31)
+
+s = SolicitaDescarga()
+sol_descarga = s.solicitar_descarga(fiel_cer_der, fiel_key_der, FIEL_PAS, 'XAXX010101000', token, fecha_inicial, fecha_final, rfc_emisor='XAXX010101000')
+
+print(sol_descarga)
+# {'mensaje': 'Solicitud Aceptada', 'cod_estatus': '5000', 'id_solicitud': 'be2a3e76-684f-416a-afdf-0f9378c346be'}
+```

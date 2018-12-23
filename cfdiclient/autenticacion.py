@@ -1,15 +1,11 @@
 # -*- coding: utf-8 -*-
-import base64
-import hashlib
-import StringIO
-import uuid
 from datetime import datetime, timedelta
+import hashlib
+import base64
+import uuid
 
-from Crypto.Hash import SHA
-from Crypto.PublicKey import RSA
-from Crypto.Signature import PKCS1_v1_5
-from lxml import etree
 import requests
+from lxml import etree
 
 from cfdiclient.fiel import Fiel
 
