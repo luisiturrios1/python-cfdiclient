@@ -4,6 +4,12 @@ Cliente Python Web Service del SAT para la descarga masiva de xml
 ## Consulta y recuperación de comprobantes (Nuevo)
 https://www.sat.gob.mx/consultas/42968/consulta-y-recuperacion-de-comprobantes-(nuevo)
 
+## Instalacion
+En Windows requiere Microsoft Visual C++ Compiler for Python 2.7
+```bash
+pip install cfdiclient
+```
+
 ## Ejemplo
 ### Autenticacion
 ```python
