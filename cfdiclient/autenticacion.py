@@ -113,7 +113,7 @@ class Autenticacion():
             'SOAPAction': self.SOAP_ACTION
         }
 
-        response = requests.post(self.SOAP_URL, data=soapreq, headers=headers)
+        response = requests.post(self.SOAP_URL, data=soapreq, headers=headers, verify=False)
 
         if response.status_code != requests.codes['ok']:
             if not response.text.startswith('<s:Envelope'):
