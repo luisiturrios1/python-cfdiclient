@@ -100,7 +100,7 @@ class DescargaMasiva():
             'Authorization': 'WRAP access_token="{}"'.format(token)
         }
 
-        response = requests.post(self.SOAP_URL, data=soapreq, headers=headers, verify=False)
+        response = requests.post(self.SOAP_URL, data=soapreq, headers=headers, verify=True)
 
         if response.status_code != requests.codes['ok']:
             if not response.text.startswith('<s:Envelope'):
