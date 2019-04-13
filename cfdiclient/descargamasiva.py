@@ -120,7 +120,7 @@ class DescargaMasiva():
             None: 'http://DescargaMasivaTerceros.sat.gob.mx'
         }
 
-        resp_xml = etree.fromstring(response.text)
+        resp_xml = etree.fromstring(response.text, parser=etree.XMLParser(huge_tree=True))
 
         respuesta = resp_xml.find('s:Header/h:respuesta', namespaces=nsmap)
 
