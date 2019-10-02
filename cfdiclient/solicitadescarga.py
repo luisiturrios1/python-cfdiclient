@@ -29,8 +29,8 @@ class SolicitaDescarga():
 
         solicitud = etree.SubElement(solicitadescarga, '{{{}}}{}'.format(self.NSMAP['des'], 'solicitud'))
         solicitud.set('RfcSolicitante', rfc_solicitante)
-        solicitud.set('FechaFinal', fecha_final.strftime('%Y-%m-%dT%H:%M:%S.%fZ'))
-        solicitud.set('FechaInicial', fecha_inicial.strftime('%Y-%m-%dT%H:%M:%S.%fZ'))
+        solicitud.set('FechaFinal', fecha_final.strftime('%Y-%m-%dT%H:%M:%S'))
+        solicitud.set('FechaInicial', fecha_inicial.strftime('%Y-%m-%dT%H:%M:%S'))
         solicitud.set('TipoSolicitud', tipo_solicitud)
         if rfc_emisor is not None:
             solicitud.set('RfcEmisor', rfc_emisor)
