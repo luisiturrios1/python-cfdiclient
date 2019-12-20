@@ -5,7 +5,7 @@ with open('README.md', 'r') as fh:
 
 setuptools.setup(
     name='cfdiclient',
-    version='1.1.0',
+    version='1.2.0',
     author='Luis Iturrios',
     author_email='iturrios3063@gmail.com',
     description='Cliente Python Web Service del SAT para la descarga masiva de xml',
@@ -15,6 +15,7 @@ setuptools.setup(
     packages=setuptools.find_packages(),
     classifiers=[
         'Programming Language :: Python :: 2.7',
+        'Programming Language :: Python :: 3',
         'License :: OSI Approved :: GNU General Public License v3 (GPLv3)',
         'Operating System :: OS Independent',
     ],

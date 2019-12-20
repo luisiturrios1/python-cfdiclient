@@ -44,8 +44,12 @@ class Fiel():
         datos = ''
         for t in d:
             datos += '{}={},'.format(t[0], t[1])
-        # Codificar en UTF8
-        return datos[:-1]
+
+        datos = datos[:-1]
+        try:
+            return datos.decode('utf8')
+        except AttributeError:
+            return datos
 
     def cer_serial_number(self):
         # Obtener numero de serie del certificado
