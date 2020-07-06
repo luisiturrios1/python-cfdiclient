@@ -43,9 +43,9 @@ print('TOKEN: ', token)
 descarga = SolicitaDescarga(fiel)
 
 # EMITIDOS
-solicitud = descarga.solicitar_descarga(
-    token, RFC, FECHA_INICIAL, FECHA_FINAL, rfc_emisor=RFC, tipo_solicitud='CFDI'
-)
+# solicitud = descarga.solicitar_descarga(
+#     token, RFC, FECHA_INICIAL, FECHA_FINAL, rfc_emisor=RFC, tipo_solicitud='CFDI'
+# )
 
 # RECIBIDOS
 solicitud = descarga.solicitar_descarga(
