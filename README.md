@@ -14,16 +14,16 @@ pip install cfdiclient
 ```python
 """ ejemplo_completo.py
 
-Luis Iturrios 
+Luis Iturrios
 25 jun. 2020 13:23
 para Américo
 
 Que tal Americo.
 
 Realice unas modificaciones en el programa lo que hace es iniciar la solicitud
-y luego tratar de verificarla cada 60 segundos hasta que te da un estatus 
-completado para despues descargar los paquetes zip, en caso de que la solicitud 
-se quede en estatus de error el programa se para. 
+y luego tratar de verificarla cada 60 segundos hasta que te da un estatus
+completado para despues descargar los paquetes zip, en caso de que la solicitud
+se quede en estatus de error el programa se para.
 
 Saludos
 """
@@ -83,6 +83,7 @@ while True:
 
     estado_solicitud = int(verificacion['estado_solicitud'])
 
+    # 0, Token invalido.
     # 1, Aceptada
     # 2, En proceso
     # 3, Terminada
@@ -118,7 +119,7 @@ while True:
             with open('{}.zip'.format(paquete), 'wb') as fp:
 
                 fp.write(base64.b64decode(descarga['paquete_b64']))
-        
+
         break
 ```
 
@@ -132,7 +133,7 @@ FIEL_KEY = 'Claveprivada_FIEL_XAXX010101000_20180918_134149.key'
 FIEL_CER = 'XAXX010101000.cer'
 FIEL_PAS = 'contrasena'
 cer_der = open(FIEL_CER, 'rb').read()
-key_der = open(FIEL_KEY, 'rb').read() 
+key_der = open(FIEL_KEY, 'rb').read()
 fiel = Fiel(cer_der, key_der, FIEL_PAS)
 
 auth = Autenticacion(fiel)
