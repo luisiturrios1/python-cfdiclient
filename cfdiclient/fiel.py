@@ -40,16 +40,8 @@ class Fiel():
     def cer_issuer(self):
         # Extraer issuer
         d = self.cer.get_issuer().get_components()
-        # Generar cafena issuer
-        datos = ''
-        for t in d:
-            datos += '{}={},'.format(t[0], t[1])
-
-        datos = datos[:-1]
-        try:
-            return datos.decode('utf8')
-        except AttributeError:
-            return datos
+        # Generar cadena issuer
+        return ','.join(['{key}={value}'.format(key=key.decode(), value=value.decode()) for key, value in d])
 
     def cer_serial_number(self):
         # Obtener numero de serie del certificado
