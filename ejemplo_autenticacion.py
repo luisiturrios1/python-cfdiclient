@@ -3,8 +3,8 @@ from cfdiclient import Autenticacion
 from cfdiclient import Fiel
 import os
 
-FIEL_CER = '20001000000200000192.cer'
-FIEL_KEY = '20001000000200000192.key'
+FIEL_CER = 'ejemploCer.cer'
+FIEL_KEY = 'ejemploKey.key'
 FIEL_PAS = '12345678a'
 
 PATH = 'certificados/'

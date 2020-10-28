@@ -1,24 +1,29 @@
-""" 
-ejemplo_completo.py
-"""
+# -*- coding: utf-8 -*-
 import base64
 import datetime
 import os
 import time
 
-from cfdiclient import (Autenticacion, DescargaMasiva, Fiel, SolicitaDescarga,
-                        VerificaSolicitudDescarga)
+from cfdiclient import Autenticacion
+from cfdiclient import DescargaMasiva
+from cfdiclient import Fiel
+from cfdiclient import SolicitaDescarga
+from cfdiclient import VerificaSolicitudDescarga
 
+##
+## Constantes de Loggin
+##
 RFC = 'ESI920427886'
-FIEL_CER = '20001000000200000192.cer'
-FIEL_KEY = '20001000000200000192.key'
+FIEL_CER = 'ejemploCer.cer'
+FIEL_KEY = 'ejemploKey.key'
 FIEL_PAS = '12345678a'
-FECHA_INICIAL = datetime.date(2020, 1, 1)
-FECHA_FINAL = datetime.date(2020, 6, 24)
 PATH = 'certificados/'
 
 cer_der = open(os.path.join(PATH, FIEL_CER), 'rb').read()
 key_der = open(os.path.join(PATH, FIEL_KEY), 'rb').read()
+
+FECHA_INICIAL = datetime.date(2020, 1, 1)
+FECHA_FINAL = datetime.date(2020, 6, 24)
 
 fiel = Fiel(cer_der, key_der, FIEL_PAS)
 
