@@ -1,32 +1,22 @@
 # python-cfdiclient
+
 Cliente Python Web Service del SAT para la descarga masiva de xml
 
 ## Consulta y recuperación de comprobantes (Nuevo)
+
 https://www.sat.gob.mx/consultas/42968/consulta-y-recuperacion-de-comprobantes-(nuevo)
 
 ## Instalacion
+
 En Windows requiere Microsoft Visual C++ Compiler for Python 2.7
+
 ```bash
 pip install cfdiclient
 ```
 
 ## Ejemplo Completo
+
 ```python
-""" ejemplo_completo.py
-
-Luis Iturrios
-25 jun. 2020 13:23
-para Américo
-
-Que tal Americo.
-
-Realice unas modificaciones en el programa lo que hace es iniciar la solicitud
-y luego tratar de verificarla cada 60 segundos hasta que te da un estatus
-completado para despues descargar los paquetes zip, en caso de que la solicitud
-se quede en estatus de error el programa se para.
-
-Saludos
-"""
 import base64
 import datetime
 import os
@@ -124,7 +114,9 @@ while True:
 ```
 
 ## Ejemplo
+
 ### Autenticacion
+
 ```python
 from cfdiclient import Autenticacion
 from cfdiclient import Fiel
@@ -142,7 +134,9 @@ token = auth.obtener_token()
 
 print(token)
 ```
+
 ### Solicita Descarga
+
 ```python
 import datetime
 from cfdiclient import SolicitaDescarga
@@ -174,6 +168,7 @@ print(result)
 ```
 
 ### Verifica Solicitud Descarga
+
 ```python
 from cfdiclient import VerificaSolicitudDescarga
 from cfdiclient import Fiel
@@ -197,6 +192,7 @@ print(result)
 ```
 
 ### Descargar Paquetes
+
 ```python
 from cfdiclient import DescargaMasiva
 from cfdiclient import Fiel
@@ -220,6 +216,7 @@ print(result)
 ```
 
 ### Valida estado de documento
+
 ```python
 from cfdiclient import Validacion
 

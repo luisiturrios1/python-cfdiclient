@@ -1,36 +1,29 @@
-""" ejemplo_completo.py
-
-Luis Iturrios 
-25 jun. 2020 13:23
-para Américo
-
-Que tal Americo.
-
-Realice unas modificaciones en el programa lo que hace es iniciar la solicitud
-y luego tratar de verificarla cada 60 segundos hasta que te da un estatus 
-completado para despues descargar los paquetes zip, en caso de que la solicitud 
-se quede en estatus de error el programa se para. 
-
-Saludos
-"""
+# -*- coding: utf-8 -*-
 import base64
 import datetime
 import os
 import time
 
-from cfdiclient import (Autenticacion, DescargaMasiva, Fiel, SolicitaDescarga,
-                        VerificaSolicitudDescarga)
+from cfdiclient import Autenticacion
+from cfdiclient import DescargaMasiva
+from cfdiclient import Fiel
+from cfdiclient import SolicitaDescarga
+from cfdiclient import VerificaSolicitudDescarga
 
-RFC = 'IUAL9406031K4'
-FIEL_CER = 'asd.cer'
-FIEL_KEY = 'df.key'
-FIEL_PAS = ''
-FECHA_INICIAL = datetime.date(2020, 1, 1)
-FECHA_FINAL = datetime.date(2020, 6, 24)
-PATH = 'Inputs/IUAL9406031K4/'
+##
+## Constantes de Loggin
+##
+RFC = 'ESI920427886'
+FIEL_CER = 'ejemploCer.cer'
+FIEL_KEY = 'ejemploKey.key'
+FIEL_PAS = '12345678a'
+PATH = 'certificados/'
 
 cer_der = open(os.path.join(PATH, FIEL_CER), 'rb').read()
 key_der = open(os.path.join(PATH, FIEL_KEY), 'rb').read()
+
+FECHA_INICIAL = datetime.date(2020, 1, 1)
+FECHA_FINAL = datetime.date(2020, 6, 24)
 
 fiel = Fiel(cer_der, key_der, FIEL_PAS)
 
