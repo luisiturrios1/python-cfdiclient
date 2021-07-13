@@ -1,4 +1,0 @@
-lxml>=4.2.5
-requests>=2.21.0
-pycryptodome>=3.7.2
-pyOpenSSL>=18.0.0

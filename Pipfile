@@ -1,0 +1,21 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+lxml = ">=4.2.5"
+requests = ">=2.21.0"
+pycryptodome = ">=3.7.2"
+pyOpenSSL = ">=18.0.0"
+
+[dev-packages]
+pip = "*"
+setuptools = "*"
+wheel = "*"
+pytest = "*"
+twine = "*"
+autopep8 = "*"
+
+[requires]
+python_version = "3.9"
