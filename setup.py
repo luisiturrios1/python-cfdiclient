@@ -1,11 +1,12 @@
 import setuptools
+import src
 
 with open('README.md', 'r') as fh:
     long_description = fh.read()
 
 setuptools.setup(
-    name='cfdiclient',
-    version='1.3.5',
+    name=src.name,
+    version=src.version,
     author='Luis Iturrios',
     author_email='luisiturrios1@gmail.com',
     description='Cliente Python Web Service del SAT para la descarga masiva de CFDIs',
