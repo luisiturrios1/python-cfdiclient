@@ -1,4 +1,4 @@
-import src as cfdiclient
+import cfdiclient
 
 
 def test_cfdiclient():
