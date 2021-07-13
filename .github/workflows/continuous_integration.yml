@@ -55,7 +55,7 @@ jobs:
         run: |
           python -m pip install --upgrade pip setuptools wheel pipenv --upgrade-strategy=eager
 
-      - name: Install dependencies
+      - name: Install
         env:
           PIPENV_DEFAULT_PYTHON_VERSION: ${{ matrix.python-version }}
           PYTHONWARNINGS: ignore:DEPRECATION

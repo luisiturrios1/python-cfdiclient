@@ -16,6 +16,3 @@ wheel = "*"
 pytest = "*"
 twine = "*"
 autopep8 = "*"
-
-[requires]
-python_version = "3.9"
