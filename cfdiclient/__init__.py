@@ -17,4 +17,4 @@ __all__ = [
 
 name = 'cfdiclient'
 
-version = '1.3.11'
+version = '1.4.1'
