@@ -10,9 +10,5 @@ pycryptodome = ">=3.7.2"
 pyOpenSSL = ">=18.0.0"
 
 [dev-packages]
-pip = "*"
-setuptools = "*"
-wheel = "*"
 pytest = "*"
-twine = "*"
 autopep8 = "*"
