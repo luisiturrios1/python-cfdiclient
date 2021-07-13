@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
-from cfdiclient.autenticacion import Autenticacion
-from cfdiclient.descargamasiva import DescargaMasiva
-from cfdiclient.fiel import Fiel
-from cfdiclient.solicitadescarga import SolicitaDescarga
-from cfdiclient.validacioncfdi import Validacion
-from cfdiclient.verificasolicituddescarga import VerificaSolicitudDescarga
+from .autenticacion import Autenticacion
+from .descargamasiva import DescargaMasiva
+from .fiel import Fiel
+from .solicitadescarga import SolicitaDescarga
+from .validacioncfdi import Validacion
+from .verificasolicituddescarga import VerificaSolicitudDescarga
 
 __all__ = [
     'Autenticacion',
@@ -17,4 +17,4 @@ __all__ = [
 
 name = 'cfdiclient'
 
-version = '1.3.10'
+version = '1.3.11'

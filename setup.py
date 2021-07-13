@@ -1,13 +1,11 @@
 import setuptools
 
-import cfdiclient
-
 with open('README.md', 'r') as fh:
     long_description = fh.read()
 
 setuptools.setup(
     name='cfdiclient',
-    version='1.3.10',
+    version='1.3.11',
     author='Luis Iturrios',
     author_email='luisiturrios1@gmail.com',
     description='Cliente Python Web Service del SAT para la descarga masiva de CFDIs',
@@ -24,7 +22,7 @@ setuptools.setup(
         'License :: OSI Approved :: GNU General Public License v3 (GPLv3)',
         'Operating System :: OS Independent',
     ],
-    install_requires=[
+    install_requires = [
         'lxml>=4.2.5',
         'requests>=2.21.0',
         'pycryptodome>=3.7.2',
