@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import base64
 import hashlib
-
+import logging
 import requests
 from lxml import etree
 
@@ -100,7 +100,12 @@ class DescargaMasiva():
             'Authorization': 'WRAP access_token="{}"'.format(token)
         }
 
+        logging.debug('headers', headers)
+        logging.debug('soapreq', soapreq)
+
         response = requests.post(self.SOAP_URL, data=soapreq, headers=headers, verify=True)
+
+        logging.debug('response', response)
 
         if response.status_code != requests.codes['ok']:
             if not response.text.startswith('<s:Envelope'):

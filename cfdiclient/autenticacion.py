@@ -3,14 +3,14 @@ from datetime import datetime, timedelta
 import hashlib
 import base64
 import uuid
-
+import logging
 import requests
 from lxml import etree
 
 
 class Autenticacion():
     SOAP_URL = 'https://cfdidescargamasivasolicitud.clouda.sat.gob.mx/Autenticacion/Autenticacion.svc'
-    SOAP_ACTION = 'http://DescargaMasivaTerceros.sat.gob.mx/IAutenticacion/Autentica'
+    SOAP_ACTION = 'http://DescargaMasivaTerceros.gob.mx/IAutenticacion/Autentica'
     NSMAP = {
         's': 'http://schemas.xmlsoap.org/soap/envelope/',
         'u': 'http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd'
@@ -84,7 +84,7 @@ class Autenticacion():
 
         body = etree.SubElement(soap_req, '{{{}}}{}'.format(self.NSMAP['s'], 'Body'))
 
-        etree.SubElement(body, 'Autentica', nsmap={None: 'http://DescargaMasivaTerceros.sat.gob.mx'})
+        etree.SubElement(body, 'Autentica', nsmap={None: 'http://DescargaMasivaTerceros.gob.mx'})
 
         to_digest = etree.tostring(timestamp, method='c14n', exclusive=1)
 
@@ -113,7 +113,12 @@ class Autenticacion():
             'SOAPAction': self.SOAP_ACTION
         }
 
+        logging.debug('headers', headers)
+        logging.debug('soapreq', soapreq)
+
         response = requests.post(self.SOAP_URL, data=soapreq, headers=headers, verify=True)
+        
+        logging.debug('response', response)
 
         if response.status_code != requests.codes['ok']:
             if not response.text.startswith('<s:Envelope'):
@@ -129,7 +134,7 @@ class Autenticacion():
 
         nsmap= {
             's': 'http://schemas.xmlsoap.org/soap/envelope/',
-            None: 'http://DescargaMasivaTerceros.sat.gob.mx'
+            None: 'http://DescargaMasivaTerceros.gob.mx'
         }
 
         resp_xml = etree.fromstring(response.text)
