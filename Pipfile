@@ -10,5 +10,7 @@ pycryptodome = ">=3.7.2"
 pyOpenSSL = ">=18.0.0"
 
 [dev-packages]
-pytest = "*"
+pytest = ">=4.6.11"
 autopep8 = "*"
+importlib_metadata = "*"
+atomicwrites = "*"
