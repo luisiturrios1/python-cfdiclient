@@ -12,5 +12,6 @@ pyOpenSSL = ">=18.0.0"
 [dev-packages]
 pytest = ">=4.6.11"
 autopep8 = "*"
-importlib_metadata = "*"
+importlib_metadata = ">=2.1.1"
 atomicwrites = "*"
+typing-extensions = "*"
