@@ -1,4 +1,4 @@
-name: continuous_deployment
+name: Continuous Deployment
 
 on:
   push:
@@ -35,7 +35,7 @@ jobs:
 
     - name: Install dependencies
       run: |
-        python -m pip install --upgrade --upgrade-strategy=eager pip setuptools wheel twine
+        python -m pip install --upgrade --upgrade-strategy=eager pip pipenv setuptools wheel twine
         python -m pip install .
         python -m pipenv install --dev
       env:
