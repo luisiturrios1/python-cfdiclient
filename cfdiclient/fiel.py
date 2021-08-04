@@ -41,7 +41,7 @@ class Fiel():
         # Extraer issuer
         d = self.cer.get_issuer().get_components()
         # Generar cadena issuer
-        return ','.join(['{key}={value}'.format(key=key.decode(), value=value.decode()) for key, value in d])
+        return u','.join(['{key}={value}'.format(key=key.decode(), value=value.decode()) for key, value in d])
 
     def cer_serial_number(self):
         # Obtener numero de serie del certificado
