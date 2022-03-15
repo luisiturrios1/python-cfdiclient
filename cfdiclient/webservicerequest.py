@@ -41,7 +41,18 @@ class WebServiceRequest(Utils):
     def set_request_arguments(self, arguments: dict) -> etree.Element:
         solicitud = self.get_element(self.solicitud_xpath)
         for key in arguments:
-            solicitud.set(key, arguments[key])
+            # TODO: Remover esta hardcodeada de aqui
+            if key == 'RfcReceptores':
+                for i, rfc_receptor in enumerate(arguments[key]):
+                    if i == 0:
+                        self.set_element_text(
+                            's:Body/des:SolicitaDescarga/des:solicitud/des:RfcReceptores/des:RfcReceptor',
+                            rfc_receptor
+                        )
+                        # TODO: Agregar mas de un RFC
+                continue
+            if arguments[key] != None:
+                solicitud.set(key, arguments[key])
         return solicitud
 
     def request(self, token: str = None, arguments: dict = None) -> etree.Element:

@@ -12,7 +12,9 @@ class SolicitaDescarga(WebServiceRequest):
 
     def solicitar_descarga(
         self, token, rfc_solicitante, fecha_inicial, fecha_final,
-        rfc_emisor=None, rfc_receptor=None, tipo_solicitud='CFDI'
+        rfc_emisor=None, rfc_receptor=None, tipo_solicitud='CFDI',
+        tipo_comprobante=None, estado_comprobante=None, 
+        rfc_a_cuenta_terceros=None, complemento=None, uuid=None
     ):
 
         arguments = {
@@ -20,13 +22,18 @@ class SolicitaDescarga(WebServiceRequest):
             'FechaFinal': fecha_final.strftime(self.DATE_TIME_FORMAT),
             'FechaInicial': fecha_inicial.strftime(self.DATE_TIME_FORMAT),
             'TipoSolicitud': tipo_solicitud,
+            'TipoComprobante': tipo_comprobante,
+            'EstadoComprobante': estado_comprobante,
+            'RfcACuentaTerceros': rfc_a_cuenta_terceros,
+            'Complemento': complemento,
+            'UUID': uuid,
         }
 
         if rfc_emisor:
             arguments['RfcEmisor'] = rfc_emisor
 
         if rfc_receptor:
-            arguments['RfcReceptor'] = rfc_receptor
+            arguments['RfcReceptores'] = [rfc_receptor]
 
         element_response = self.request(token, arguments)
 

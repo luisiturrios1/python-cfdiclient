@@ -3,7 +3,11 @@
     <s:Header/>
     <s:Body>
         <des:SolicitaDescarga>
-            <des:solicitud RfcSolicitante="" FechaFinal="" FechaInicial="" TipoSolicitud="" RfcReceptor=""/>
+            <des:solicitud>
+                <des:RfcReceptores>
+                    <des:RfcReceptor/>
+                </des:RfcReceptores>
+            </des:solicitud>
         </des:SolicitaDescarga>
     </s:Body>
 </s:Envelope>
