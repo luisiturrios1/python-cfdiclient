@@ -1,144 +1,72 @@
 # -*- coding: utf-8 -*-
-from datetime import datetime, timedelta
-import hashlib
 import base64
+import hashlib
 import uuid
-import logging
-import requests
-from lxml import etree
+from datetime import datetime, timedelta
+
+from .webservicerequest import WebServiceRequest
 
 
-class Autenticacion():
-    SOAP_URL = 'https://cfdidescargamasivasolicitud.clouda.sat.gob.mx/Autenticacion/Autenticacion.svc'
-    SOAP_ACTION = 'http://DescargaMasivaTerceros.gob.mx/IAutenticacion/Autentica'
-    NSMAP = {
-        's': 'http://schemas.xmlsoap.org/soap/envelope/',
-        'u': 'http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd'
-    }
-    S_NSMAP = {
-        'o': 'http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd'
-    }
+class Autenticacion(WebServiceRequest):
+    DATE_TIME_FORMAT: str = '%Y-%m-%dT%H:%M:%S.%fZ'
 
-    def __init__(self, fiel):
-        self.fiel = fiel
+    xml_name = 'autenticacion.xml'
+    soap_url = 'https://cfdidescargamasivasolicitud.clouda.sat.gob.mx/Autenticacion/Autenticacion.svc'
+    soap_action = 'http://DescargaMasivaTerceros.gob.mx/IAutenticacion/Autentica'
+    result_xpath = 's:Body/AutenticaResponse/AutenticaResult'
     
-    def __generar_soapreq__(self, id):
+    internal_nsmap = {
+        's': 'http://schemas.xmlsoap.org/soap/envelope/',
+        'o': 'http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd',
+        'u': 'http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd',
+        'des': 'http://DescargaMasivaTerceros.sat.gob.mx',
+        '': 'http://www.w3.org/2000/09/xmldsig#',
+    }
+
+    external_nsmap = {
+        '': 'http://DescargaMasivaTerceros.gob.mx',
+        's': 'http://schemas.xmlsoap.org/soap/envelope/',
+        'u': 'http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd',
+        'o': 'http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd',
+    }
+
+    def obtener_token(self, id=uuid.uuid4(), seconds=300):
+
         date_created = datetime.utcnow()
-        date_expires = date_created + timedelta(seconds=300)
-        date_created = date_created.strftime('%Y-%m-%dT%H:%M:%S.%fZ')
-        date_expires = date_expires.strftime('%Y-%m-%dT%H:%M:%S.%fZ')
+        date_expires = date_created + timedelta(seconds=seconds)
+        date_created = date_created.strftime(self.DATE_TIME_FORMAT)
+        date_expires = date_expires.strftime(self.DATE_TIME_FORMAT)
 
-        soap_req = etree.Element('{{{}}}{}'.format(self.NSMAP['s'], 'Envelope'), nsmap=self.NSMAP)
-        
-        header = etree.SubElement(soap_req, '{{{}}}{}'.format(self.NSMAP['s'], 'Header'))
-        
-        security = etree.SubElement(header, '{{{}}}{}'.format(self.S_NSMAP['o'], 'Security'), nsmap=self.S_NSMAP)
-        security.set('{{{}}}{}'.format(self.NSMAP['s'], 'mustUnderstand'), '1')
+        self.set_element_text(
+            's:Header/o:Security/u:Timestamp/u:Created',
+            date_created
+        )
+        self.set_element_text(
+            's:Header/o:Security/u:Timestamp/u:Expires',
+            date_expires
+        )
+        self.set_element_text(
+            's:Header/o:Security/o:BinarySecurityToken',
+            self.signer.fiel.cer_to_base64(),
+        )
 
-        timestamp = etree.SubElement(security, '{{{}}}{}'.format(self.NSMAP['u'], 'Timestamp'))
-        timestamp.set('{{{}}}{}'.format(self.NSMAP['u'], 'Id'), '_0')
-        
-        created = etree.SubElement(timestamp, '{{{}}}{}'.format(self.NSMAP['u'], 'Created'))
-        created.text = date_created
-        
-        expires = etree.SubElement(timestamp, '{{{}}}{}'.format(self.NSMAP['u'], 'Expires'))
-        expires.text = date_expires
-        
-        binarysecuritytoken = etree.SubElement(security, '{{{}}}{}'.format(self.S_NSMAP['o'], 'BinarySecurityToken'))
-        binarysecuritytoken.set('{{{}}}{}'.format(self.NSMAP['u'], 'Id'), str(id))
-        binarysecuritytoken.set('ValueType', 'http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-x509-token-profile-1.0#X509v3')
-        binarysecuritytoken.set('EncodingType', 'http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-soap-message-security-1.0#Base64Binary')
+        element = self.get_element('s:Header/o:Security/u:Timestamp')
+        element_bytes = self.element_to_bytes(element)
+        element_hash = hashlib.new('sha1', element_bytes)
+        element_digest = element_hash.digest()
+        element_digest_base64 = base64.b64encode(element_digest)
 
-        signature = etree.SubElement(security, 'Signature', nsmap={None: 'http://www.w3.org/2000/09/xmldsig#'})
+        digest_xpath = 's:Header/o:Security/Signature/SignedInfo/Reference/DigestValue'
+        self.set_element_text(digest_xpath, element_digest_base64)
 
-        signedinfo = etree.SubElement(signature, 'SignedInfo', nsmap={None: 'http://www.w3.org/2000/09/xmldsig#'})
+        signed_info_xpath = 's:Header/o:Security/Signature/SignedInfo'
+        signed_info = self.get_element(signed_info_xpath)
+        signed_info_bytes = self.element_to_bytes(signed_info)
+        signed_info_sign = self.signer.fiel.firmar_sha1(signed_info_bytes)
 
-        canonicalizationmethod = etree.SubElement(signedinfo, 'CanonicalizationMethod')
-        canonicalizationmethod.set('Algorithm', 'http://www.w3.org/2001/10/xml-exc-c14n#')
+        xpath = 's:Header/o:Security/Signature/SignatureValue'
+        self.set_element_text(xpath, signed_info_sign)
 
-        signaturemethod = etree.SubElement(signedinfo, 'SignatureMethod')
-        signaturemethod.set('Algorithm', 'http://www.w3.org/2000/09/xmldsig#rsa-sha1')
+        element_response = self.request()
 
-        reference = etree.SubElement(signedinfo, 'Reference')
-        reference.set('URI', '#_0')
-
-        transforms = etree.SubElement(reference, 'Transforms')
-
-        transform = etree.SubElement(transforms, 'Transform')
-        transform.set('Algorithm', 'http://www.w3.org/2001/10/xml-exc-c14n#')
-
-        digestmethod = etree.SubElement(reference, 'DigestMethod')
-        digestmethod.set('Algorithm', 'http://www.w3.org/2000/09/xmldsig#sha1')
-
-        digestvalue = etree.SubElement(reference, 'DigestValue')
-
-        signaturevalue = etree.SubElement(signature, 'SignatureValue')
-
-        keyinfo = etree.SubElement(signature, 'KeyInfo')
-
-        securitytokenreference = etree.SubElement(keyinfo, '{{{}}}{}'.format(self.S_NSMAP['o'], 'SecurityTokenReference'))
-
-        reference = etree.SubElement(securitytokenreference, '{{{}}}{}'.format(self.S_NSMAP['o'], 'Reference'))
-        reference.set('ValueType', 'http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-x509-token-profile-1.0#X509v3')
-        reference.set('URI', '#{}'.format(id))
-
-        body = etree.SubElement(soap_req, '{{{}}}{}'.format(self.NSMAP['s'], 'Body'))
-
-        etree.SubElement(body, 'Autentica', nsmap={None: 'http://DescargaMasivaTerceros.gob.mx'})
-
-        to_digest = etree.tostring(timestamp, method='c14n', exclusive=1)
-
-        digest = base64.b64encode(hashlib.new('sha1', to_digest).digest())
-        
-        digestvalue.text = digest
-
-        to_sign = etree.tostring(signedinfo, method='c14n', exclusive=1)
-
-        firma = self.fiel.firmar_sha1(to_sign)
-
-        signaturevalue.text = firma
-
-        binarysecuritytoken.text = self.fiel.cer_to_base64()
-
-        return etree.tostring(soap_req)
-
-    def obtener_token(self, id=uuid.uuid4()):
-        
-        soapreq = self.__generar_soapreq__(id)
-
-        headers = {
-            'Content-type': 'text/xml;charset="utf-8"',
-            'Accept': 'text/xml',
-            'Cache-Control': 'no-cache',
-            'SOAPAction': self.SOAP_ACTION
-        }
-
-        logging.debug('headers', headers)
-        logging.debug('soapreq', soapreq)
-
-        response = requests.post(self.SOAP_URL, data=soapreq, headers=headers, verify=True)
-        
-        logging.debug('response', response)
-
-        if response.status_code != requests.codes['ok']:
-            if not response.text.startswith('<s:Envelope'):
-                ex = 'El webservice Autenticacion responde: {}'.format(response.text)
-            else:
-                resp_xml = etree.fromstring(response.text)
-                ex = resp_xml.find('s:Body/s:Fault/faultstring', namespaces=self.NSMAP).text
-            raise Exception(ex)
-
-        if not response.text.startswith('<s:Envelope'):
-            ex = 'El webservice Autenticacion responde: {}'.format(response.text)
-            raise Exception(ex)
-
-        nsmap= {
-            's': 'http://schemas.xmlsoap.org/soap/envelope/',
-            None: 'http://DescargaMasivaTerceros.gob.mx'
-        }
-
-        resp_xml = etree.fromstring(response.text)
-
-        token = resp_xml.find('s:Body/AutenticaResponse/AutenticaResult', namespaces=nsmap)
-
-        return token.text
+        return element_response.text

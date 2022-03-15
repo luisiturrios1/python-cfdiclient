@@ -8,13 +8,13 @@ from .verificasolicituddescarga import VerificaSolicitudDescarga
 
 __all__ = [
     'Autenticacion',
-    'SolicitaDescarga',
-    'VerificaSolicitudDescarga',
     'DescargaMasiva',
     'Fiel',
+    'SolicitaDescarga',
     'Validacion',
+    'VerificaSolicitudDescarga',
 ]
 
 name = 'cfdiclient'
 
-version = '1.4.2'
+version = '1.4.3'
