@@ -23,10 +23,11 @@ class WebServiceRequest(Utils):
 
     fault_xpath: str = 's:Body/s:Fault/faultstring'
 
-    def __init__(self, fiel: Fiel, verify: bool = True) -> None:
+    def __init__(self, fiel: Fiel, verify: bool = True, timeout: int = 15) -> None:
         super().__init__()
         self.signer = Signer(fiel)
         self.verify = verify
+        self.timeout = timeout
 
     def get_headers(self, token: str) -> dict:
         headers = {
@@ -74,6 +75,7 @@ class WebServiceRequest(Utils):
             data=soap_request,
             headers=headers,
             verify=self.verify,
+            timeout=self.timeout,
         )
 
         logger.debug('Response headers: %s', response.headers)
