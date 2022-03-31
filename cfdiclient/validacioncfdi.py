@@ -4,7 +4,7 @@ from lxml import etree
 
 
 class Validacion():
-  def __init__(self):
+  def __init__(self, verify=True, timeout=15):
     self.SOAP_URL = 'https://consultaqr.facturaelectronica.sat.gob.mx/ConsultaCFDIService.svc'
     self.SOAP_ACTION = 'http://tempuri.org/IConsultaCFDIService/Consulta'
     self.NSMAP = {
@@ -12,6 +12,8 @@ class Validacion():
         'des': 'http://DescargaMasivaTerceros.sat.gob.mx',
         'xd': 'http://www.w3.org/2000/09/xmldsig#'
     }
+    self.verify = verify
+    self.timeout = timeout
 
   def __generar_soapreq__(self, rfc_emisor, rfc_receptor, total, uuid):
      soapreq = ('<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:tem="http://tempuri.org/">'
@@ -38,7 +40,13 @@ class Validacion():
         'SOAPAction': self.SOAP_ACTION,
     }
 
-    response = requests.post(self.SOAP_URL, data=soapreq, headers=headers, verify=True)
+    response = requests.post(
+        self.SOAP_URL, 
+        data=soapreq, 
+        headers=headers, 
+        verify=self.verify,
+        timeout=self.timeout,
+    )
 
 
     if response.status_code != requests.codes['ok']:
