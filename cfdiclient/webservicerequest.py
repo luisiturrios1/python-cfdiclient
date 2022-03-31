@@ -82,7 +82,10 @@ class WebServiceRequest(Utils):
         logger.debug('Response text: %s', response.text)
 
         try:
-            response_xml = etree.fromstring(response.text)
+            response_xml = etree.fromstring(
+                response.text,
+                parser=etree.XMLParser(huge_tree=True)
+            )
         except Exception:
             raise Exception(response.text)
 
