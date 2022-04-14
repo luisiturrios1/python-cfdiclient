@@ -25,4 +25,4 @@ jobs:
         stale-pr-message: 'Automatización cerrado no hay actividad'
         stale-issue-label: 'no-issue-activity'
         stale-pr-label: 'no-pr-activity'
-,
+
