@@ -11,22 +11,22 @@ class SolicitaDescarga(WebServiceRequest):
     result_xpath = 's:Body/SolicitaDescargaResponse/SolicitaDescargaResult'
 
     def solicitar_descarga(
-        self, token, rfc_solicitante, fecha_inicial, fecha_final,
+        self, token, rfc_solicitante, fecha_inicial=None, fecha_final=None,
         rfc_emisor=None, rfc_receptor=None, tipo_solicitud='CFDI',
         tipo_comprobante=None, estado_comprobante=None, 
-        rfc_a_cuenta_terceros=None, complemento=None, uuid=None
+        rfc_a_cuenta_terceros=None, complemento=None, folio=None
     ):
 
         arguments = {
             'RfcSolicitante': rfc_solicitante,
-            'FechaFinal': fecha_final.strftime(self.DATE_TIME_FORMAT),
-            'FechaInicial': fecha_inicial.strftime(self.DATE_TIME_FORMAT),
+            'FechaFinal': fecha_final.strftime(self.DATE_TIME_FORMAT) if fecha_final else None,
+            'FechaInicial': fecha_inicial.strftime(self.DATE_TIME_FORMAT) if fecha_inicial else None,
+            'Folio': folio,
             'TipoSolicitud': tipo_solicitud,
             'TipoComprobante': tipo_comprobante,
             'EstadoComprobante': estado_comprobante,
             'RfcACuentaTerceros': rfc_a_cuenta_terceros,
             'Complemento': complemento,
-            'UUID': uuid,
         }
 
         if rfc_emisor:
