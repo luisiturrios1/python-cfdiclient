@@ -13,7 +13,7 @@ class VerificaSolicitudDescarga(WebServiceRequest):
     def verificar_descarga(self, token, rfc_solicitante, id_solicitud):
 
         arguments = {
-            'RfcSolicitante': rfc_solicitante,
+            'RfcSolicitante': rfc_solicitante.upper(),
             'IdSolicitud': id_solicitud,
         }
 

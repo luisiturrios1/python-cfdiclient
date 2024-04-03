@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 import base64
 import datetime
 import os
@@ -9,9 +8,8 @@ from cfdiclient import DescargaMasiva
 from cfdiclient import Fiel
 from cfdiclient import SolicitaDescarga
 from cfdiclient import VerificaSolicitudDescarga
-
 ##
-## Constantes de Loggin
+# Constantes de Loggin
 ##
 RFC = 'ESI920427886'
 FIEL_CER = 'ejemploCer.cer'
@@ -22,8 +20,8 @@ PATH = 'certificados/'
 cer_der = open(os.path.join(PATH, FIEL_CER), 'rb').read()
 key_der = open(os.path.join(PATH, FIEL_KEY), 'rb').read()
 
-FECHA_INICIAL = datetime.date(2020, 1, 1)
-FECHA_FINAL = datetime.date(2020, 6, 24)
+FECHA_INICIAL = datetime.datetime(2024, 3, 1)
+FECHA_FINAL = datetime.datetime(2024, 3, 30)
 
 fiel = Fiel(cer_der, key_der, FIEL_PAS)
 
@@ -37,15 +35,17 @@ descarga = SolicitaDescarga(fiel)
 
 # EMITIDOS
 # solicitud = descarga.solicitar_descarga(
-#     token, RFC, FECHA_INICIAL, FECHA_FINAL, rfc_emisor=RFC, tipo_solicitud='CFDI'
+#     token, RFC, FECHA_INICIAL, FECHA_FINAL, rfc_emisor=RFC, tipo_solicitud='CFDI',
 # )
 
 # RECIBIDOS
 solicitud = descarga.solicitar_descarga(
-    token, RFC, FECHA_INICIAL, FECHA_FINAL, rfc_receptor=RFC, tipo_solicitud='CFDI'
+    token, RFC, FECHA_INICIAL, FECHA_FINAL, rfc_receptor=RFC, tipo_solicitud='CFDI',
 )
+print('solicitar_descarga:', solicitud)
 
-print('SOLICITUD:', solicitud)
+if solicitud['cod_estatus'] != '5000':
+    exit(1)
 
 while True:
 
@@ -58,10 +58,11 @@ while True:
     verificacion = verificacion.verificar_descarga(
         token, RFC, solicitud['id_solicitud'])
 
-    print('SOLICITUD:', verificacion)
+    print('verificar_descarga:', verificacion)
 
     estado_solicitud = int(verificacion['estado_solicitud'])
 
+    # 0, Token invalido.
     # 1, Aceptada
     # 2, En proceso
     # 3, Terminada
@@ -73,7 +74,7 @@ while True:
 
         # Si el estado de solicitud esta Aceptado o en proceso el programa espera
         # 60 segundos y vuelve a tratar de verificar
-        time.sleep(60)
+        time.sleep(10)
 
         continue
 
@@ -97,5 +98,5 @@ while True:
             with open('{}.zip'.format(paquete), 'wb') as fp:
 
                 fp.write(base64.b64decode(descarga['paquete_b64']))
-        
+
         break
