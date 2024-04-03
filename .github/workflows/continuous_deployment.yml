@@ -12,9 +12,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       CI: "1"
-    permissions:
-      id-token: write
-
+      
     steps:
     - name: Checkout code
       uses: actions/checkout@v2
