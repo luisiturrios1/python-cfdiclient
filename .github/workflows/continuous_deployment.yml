@@ -12,6 +12,8 @@ jobs:
     runs-on: ubuntu-latest
     env:
       CI: "1"
+    permissions:
+      id-token: write
 
     steps:
     - name: Checkout code
@@ -46,7 +48,7 @@ jobs:
         python -m pipenv run python setup.py sdist bdist_wheel
     # to upload to test pypi, pass repository_url: https://test.pypi.org/legacy/ and use secrets.TEST_PYPI_TOKEN
     - name: Publish a Python distribution to PyPI
-      uses: pypa/gh-action-pypi-publish@master
+      uses: pypa/gh-action-pypi-publish@release/v1
       with:
         user: __token__
         password: ${{ secrets.PYPI_TOKEN }}
