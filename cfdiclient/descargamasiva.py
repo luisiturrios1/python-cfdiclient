@@ -13,7 +13,7 @@ class DescargaMasiva(WebServiceRequest):
     def descargar_paquete(self, token, rfc_solicitante, id_paquete):
 
         arguments = {
-            'RfcSolicitante': rfc_solicitante,
+            'RfcSolicitante': rfc_solicitante.upper(),
             'IdPaquete': id_paquete,
         }
 
