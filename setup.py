@@ -24,7 +24,7 @@ setuptools.setup(
         'Operating System :: OS Independent',
     ],
     install_requires=[
-        'lxml>=4.2.5',
+        'lxml>=4.6.4',
         'requests>=2.21.0',
         'pycryptodome>=3.7.2',
         'pyOpenSSL>=18.0.0'
