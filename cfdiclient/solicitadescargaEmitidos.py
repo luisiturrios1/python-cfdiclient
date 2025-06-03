@@ -2,13 +2,13 @@
 from .webservicerequest import WebServiceRequest
 
 
-class SolicitaDescarga(WebServiceRequest):
+class SolicitaDescargaEmitidos(WebServiceRequest):
 
-    xml_name = 'solicitadescarga.xml'
+    xml_name = 'solicitadescargaEmitidos.xml'
     soap_url = 'https://cfdidescargamasivasolicitud.clouda.sat.gob.mx/SolicitaDescargaService.svc'
-    soap_action = 'http://DescargaMasivaTerceros.sat.gob.mx/ISolicitaDescargaService/SolicitaDescarga'
-    solicitud_xpath = 's:Body/des:SolicitaDescarga/des:solicitud'
-    result_xpath = 's:Body/SolicitaDescargaResponse/SolicitaDescargaResult'
+    soap_action = 'http://DescargaMasivaTerceros.sat.gob.mx/ISolicitaDescargaService/SolicitaDescargaEmitidos'
+    solicitud_xpath = 's:Body/des:SolicitaDescargaEmitidos/des:solicitud'
+    result_xpath = 's:Body/SolicitaDescargaEmitidosResponse/SolicitaDescargaEmitidosResult'
 
     def solicitar_descarga(
         self, token, rfc_solicitante, fecha_inicial, fecha_final,

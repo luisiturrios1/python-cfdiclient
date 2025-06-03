@@ -47,7 +47,7 @@ class WebServiceRequest(Utils):
                 for i, rfc_receptor in enumerate(arguments[key]):
                     if i == 0:
                         self.set_element_text(
-                            's:Body/des:SolicitaDescarga/des:solicitud/des:RfcReceptores/des:RfcReceptor',
+                            's:Body/des:SolicitaDescargaEmitidos/des:solicitud/des:RfcReceptores/des:RfcReceptor',
                             rfc_receptor
                         )
                         # TODO: Agregar mas de un RFC
