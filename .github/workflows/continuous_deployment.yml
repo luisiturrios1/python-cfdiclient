@@ -7,6 +7,8 @@ on:
       - v[0-9]+.[0-9]+.* # add .* to allow dev releases
 permissions:
   id-token: write
+  packages: write
+  contents: write
 jobs:
   deploy:
     name: pipenv PyPI Upload
