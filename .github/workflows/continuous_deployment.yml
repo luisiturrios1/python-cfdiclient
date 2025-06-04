@@ -51,7 +51,7 @@ jobs:
       - name: Publish a Python distribution to PyPI
         uses: pypa/gh-action-pypi-publish@release/v1
         with:
-          packages_dir: dist/
+          packages-dir: dist/
 
       - name: Push changes
         uses: ad-m/github-push-action@master
