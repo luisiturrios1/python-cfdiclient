@@ -8,15 +8,15 @@ from .validacioncfdi import Validacion
 from .verificasolicituddescarga import VerificaSolicitudDescarga
 
 __all__ = [
-    'Autenticacion',
-    'DescargaMasiva',
-    'Fiel',
-    'SolicitaDescargaEmitidos',
-    'SolicitaDescargaRecibidos',
-    'Validacion',
-    'VerificaSolicitudDescarga',
+    "Autenticacion",
+    "DescargaMasiva",
+    "Fiel",
+    "SolicitaDescargaEmitidos",
+    "SolicitaDescargaRecibidos",
+    "Validacion",
+    "VerificaSolicitudDescarga",
 ]
 
-name = 'cfdiclient'
+name = "cfdiclient"
 
-version = '1.6.0'
+version = "1.6.1"
