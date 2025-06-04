@@ -41,7 +41,7 @@ jobs:
       - uses: actions/checkout@v1
 
       - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
           architecture: ${{ matrix.architecture }}
@@ -51,9 +51,9 @@ jobs:
         run: |
           echo ::set-output name=path::$(python -c "import sys; print(sys.executable)")
 
-      - name: Install latest pip, setuptools, wheel
+      - name: Install latest pip
         run: |
-          python -m pip install --upgrade pip setuptools wheel pipenv --upgrade-strategy=eager
+          python -m pip install --upgrade pip pipenv --upgrade-strategy=eager
 
       - name: Install
         env:
