@@ -2,7 +2,8 @@
 from .autenticacion import Autenticacion
 from .descargamasiva import DescargaMasiva
 from .fiel import Fiel
-from .solicitadescarga import SolicitaDescarga
+from .solicitadescargaEmitidos import SolicitaDescargaEmitidos
+
 from .validacioncfdi import Validacion
 from .verificasolicituddescarga import VerificaSolicitudDescarga
 
@@ -10,11 +11,12 @@ __all__ = [
     'Autenticacion',
     'DescargaMasiva',
     'Fiel',
-    'SolicitaDescarga',
+    'SolicitaDescargaEmitidos',
+    'SolicitaDescargaRecibidos',
     'Validacion',
     'VerificaSolicitudDescarga',
 ]
 
 name = 'cfdiclient'
 
-version = '1.5.9'
+version = '1.6.0'

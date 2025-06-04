@@ -6,7 +6,8 @@ import time
 from cfdiclient import Autenticacion
 from cfdiclient import DescargaMasiva
 from cfdiclient import Fiel
-from cfdiclient import SolicitaDescarga
+from cfdiclient import solicitadescargaEmitidos
+from cfdiclient import solicitadescargaRecibidos
 from cfdiclient import VerificaSolicitudDescarga
 ##
 # Constantes de Loggin
@@ -20,8 +21,8 @@ PATH = 'certificados/'
 cer_der = open(os.path.join(PATH, FIEL_CER), 'rb').read()
 key_der = open(os.path.join(PATH, FIEL_KEY), 'rb').read()
 
-FECHA_INICIAL = datetime.datetime(2024, 3, 1)
-FECHA_FINAL = datetime.datetime(2024, 3, 30)
+FECHA_INICIAL = datetime.datetime(2025, 6, 1)
+FECHA_FINAL = datetime.datetime(2025, 6, 2)
 
 fiel = Fiel(cer_der, key_der, FIEL_PAS)
 
@@ -31,17 +32,22 @@ token = auth.obtener_token()
 
 print('TOKEN: ', token)
 
-descarga = SolicitaDescarga(fiel)
+#descarga = solicitadescargaEmitidos.SolicitaDescargaEmitidos(fiel)
+descarga = solicitadescargaRecibidos.SolicitaDescargaRecibidos(fiel)
 
-# EMITIDOS
-# solicitud = descarga.solicitar_descarga(
-#     token, RFC, FECHA_INICIAL, FECHA_FINAL, rfc_emisor=RFC, tipo_solicitud='CFDI',
-# )
 
-# RECIBIDOS
+
+# Emitidos
+#solicitud = descarga.solicitar_descarga(
+#    token, RFC, FECHA_INICIAL, FECHA_FINAL, rfc_emisor=RFC,tipo_solicitud='CFDI',
+#)
+
+# Recibidos
 solicitud = descarga.solicitar_descarga(
-    token, RFC, FECHA_INICIAL, FECHA_FINAL, rfc_receptor=RFC, tipo_solicitud='CFDI',
+    token, RFC, FECHA_INICIAL, FECHA_FINAL, rfc_receptor=RFC,tipo_solicitud='Metadata', estado_comprobante='Todos',
 )
+
+
 print('solicitar_descarga:', solicitud)
 
 if solicitud['cod_estatus'] != '5000':
