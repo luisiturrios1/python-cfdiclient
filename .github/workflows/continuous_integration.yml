@@ -40,6 +40,12 @@ jobs:
     steps:
       - uses: actions/checkout@v1
 
+      - name: Install missing dependency (MacOS only)
+        if: matrix.os == 'MacOS'
+        run: |
+          brew install gettext
+          brew link --force gettext
+
       - name: Set up Python ${{ matrix.python-version }}
         uses: actions/setup-python@v5
         with:
