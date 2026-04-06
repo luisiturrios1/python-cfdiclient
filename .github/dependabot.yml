@@ -1,0 +1,52 @@
+# Dependabot configuration for python-cfdiclient
+#
+# Keeps pip (Pipfile) dependencies and GitHub Actions pinned versions up to
+# date automatically via weekly pull requests.
+
+version: 2
+
+updates:
+  # ── Python / pip dependencies ────────────────────────────────────────────
+  - package-ecosystem: pip
+    directory: "/"
+    schedule:
+      interval: weekly
+      day: monday
+      time: "06:00"
+      timezone: America/Mexico_City
+    open-pull-requests-limit: 10
+    labels:
+      - dependencies
+      - python
+    commit-message:
+      prefix: "deps(pip)"
+    reviewers:
+      - luisiturrios1
+    # Group all non-major updates into a single PR to reduce noise.
+    groups:
+      pip-minor-patch:
+        update-types:
+          - minor
+          - patch
+
+  # ── GitHub Actions ────────────────────────────────────────────────────────
+  - package-ecosystem: github-actions
+    directory: "/"
+    schedule:
+      interval: weekly
+      day: monday
+      time: "06:00"
+      timezone: America/Mexico_City
+    open-pull-requests-limit: 10
+    labels:
+      - dependencies
+      - github-actions
+    commit-message:
+      prefix: "deps(actions)"
+    reviewers:
+      - luisiturrios1
+    groups:
+      actions-minor-patch:
+        update-types:
+          - minor
+          - patch

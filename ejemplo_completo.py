@@ -12,6 +12,15 @@ from cfdiclient import VerificaSolicitudDescarga
 ##
 # Constantes de Loggin
 ##
+# SECURITY WARNING: Never hardcode credentials in source files.
+# Load RFC, certificate paths, and passphrase from environment variables or a
+# secrets manager (e.g. AWS Secrets Manager, HashiCorp Vault) in real use:
+#
+#   import os
+#   RFC = os.environ["SAT_RFC"]
+#   FIEL_PAS = os.environ["SAT_FIEL_PASSPHRASE"].encode("utf-8")
+#
+# The values below are DEMO ONLY and must not be committed with real data.
 RFC = 'ESI920427886'
 FIEL_CER = 'ejemploCer.cer'
 FIEL_KEY = 'ejemploKey.key'

@@ -1,0 +1,72 @@
+# Pre-commit hook configuration for python-cfdiclient
+#
+# Install hooks:
+#   pip install pre-commit
+#   pre-commit install
+#
+# Run manually against all files:
+#   pre-commit run --all-files
+#
+# Hooks run in the order listed. Fast formatters (black, isort) come first so
+# linters (pylint, mypy) see already-formatted code.
+
+repos:
+  # ── General file hygiene ──────────────────────────────────────────────────
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v5.0.0
+    hooks:
+      - id: trailing-whitespace
+        args: [--markdown-linebreak-ext=md]
+      - id: end-of-file-fixer
+      - id: check-yaml
+        args: [--allow-multiple-documents]
+      - id: check-toml
+      - id: check-added-large-files
+        args: [--maxkb=500]
+      - id: check-merge-conflict
+      - id: debug-statements
+
+  # ── Code formatting: black ────────────────────────────────────────────────
+  - repo: https://github.com/psf/black
+    rev: 25.1.0
+    hooks:
+      - id: black
+        language_version: python3
+        args: [--line-length=100]
+
+  # ── Import sorting: isort ─────────────────────────────────────────────────
+  - repo: https://github.com/PyCQA/isort
+    rev: 6.0.1
+    hooks:
+      - id: isort
+        args:
+          - --profile=black
+          - --line-length=100
+
+  # ── Linting: pylint ───────────────────────────────────────────────────────
+  - repo: local
+    hooks:
+      - id: pylint
+        name: pylint
+        entry: pylint
+        language: system
+        types: [python]
+        args:
+          - cfdiclient/
+          - --rcfile=pylint.rc
+          - --fail-under=8.0
+        pass_filenames: false
+
+  # ── Type checking: mypy ───────────────────────────────────────────────────
+  - repo: local
+    hooks:
+      - id: mypy
+        name: mypy
+        entry: mypy
+        language: system
+        types: [python]
+        args:
+          - cfdiclient/
+          - --ignore-missing-imports
+          - --strict
+        pass_filenames: false

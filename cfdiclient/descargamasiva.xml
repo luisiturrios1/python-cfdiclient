@@ -1,9 +1,0 @@
-<s:Envelope xmlns:des="http://DescargaMasivaTerceros.sat.gob.mx"
-    xmlns:s="http://schemas.xmlsoap.org/soap/envelope/">
-    <s:Header/>
-    <s:Body>
-        <des:PeticionDescargaMasivaTercerosEntrada>
-            <des:peticionDescarga IdPaquete="" RfcSolicitante=""/>
-        </des:PeticionDescargaMasivaTercerosEntrada>
-    </s:Body>
-</s:Envelope>

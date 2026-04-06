@@ -1,0 +1,169 @@
+# Publish pipeline for python-cfdiclient
+#
+# Triggers when a version tag (v*.*.*) is pushed.
+# Reuses the CI workflow via workflow_call, then builds and publishes to PyPI
+# using OIDC trusted publishing — no PyPI token stored in repository secrets.
+#
+# Prerequisites (one-time setup in PyPI):
+#   1. Go to https://pypi.org/manage/project/cfdiclient/settings/publishing/
+#   2. Add a trusted publisher:
+#      - Publisher: GitHub Actions
+#      - Owner:      luisiturrios1
+#      - Repository: python-cfdiclient
+#      - Workflow:   publish.yml
+#      - Environment: release
+#
+# The "release" GitHub environment should have a protection rule requiring
+# manual approval before the publish step runs.
+
+name: Publish
+
+on:
+  push:
+    tags:
+      - "v[0-9]+.[0-9]+.[0-9]+"
+
+# Least-privilege default; publish job overrides what it needs.
+permissions:
+  contents: read
+
+jobs:
+  # ── Re-run the full CI suite before publishing ────────────────────────────
+  ci:
+    name: Run CI checks
+    uses: ./.github/workflows/ci.yml
+    # workflow_call inherits secrets; no explicit secret passing needed here.
+
+  # ── Build distribution artifacts ─────────────────────────────────────────
+  build:
+    name: Build distribution
+    runs-on: ubuntu-latest
+    needs: ci
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          # Fetch full history so the changelog step has all commits.
+          fetch-depth: 0
+
+      - name: Set up Python 3.12
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5.6.0
+        with:
+          python-version: "3.12"
+
+      - name: Cache pipenv virtualenv
+        uses: actions/cache@5a3ec84eff668545956fd18022155c47e93e2684 # v4.2.3
+        with:
+          path: ~/.local/share/virtualenvs
+          key: ${{ runner.os }}-py3.12-pipenv-${{ hashFiles('Pipfile.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-py3.12-pipenv-
+
+      - name: Install pipenv and build dependencies
+        run: |
+          python -m pip install --upgrade pip pipenv
+          pipenv install --dev --deploy
+
+      - name: Build sdist and wheel
+        run: |
+          pipenv run python -m build
+
+      - name: Verify distribution contents
+        run: |
+          pipenv run twine check dist/*
+
+      - name: Store distribution artifacts
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: dist
+          path: dist/
+          retention-days: 1
+
+  # ── Publish to PyPI via OIDC trusted publishing ───────────────────────────
+  publish:
+    name: Publish to PyPI
+    runs-on: ubuntu-latest
+    needs: build
+    environment: release
+
+    permissions:
+      # Required for OIDC token exchange with PyPI.
+      id-token: write
+
+    steps:
+      - name: Download distribution artifacts
+        uses: actions/download-artifact@95815c38cf2ff2164869cbab79da8d1f422c6e08 # v4.2.1
+        with:
+          name: dist
+          path: dist/
+
+      - name: Publish to PyPI
+        uses: pypa/gh-action-pypi-publish@76f52bc884231f62b9a034ebfe128415bbaabdfc # v1.12.4
+        with:
+          packages-dir: dist/
+          # OIDC trusted publishing: no password or token required.
+
+  # ── Create GitHub Release with auto-generated changelog ──────────────────
+  release:
+    name: Create GitHub Release
+    runs-on: ubuntu-latest
+    needs: publish
+
+    permissions:
+      # Required to create releases and upload assets.
+      contents: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          fetch-depth: 0
+
+      - name: Download distribution artifacts
+        uses: actions/download-artifact@95815c38cf2ff2164869cbab79da8d1f422c6e08 # v4.2.1
+        with:
+          name: dist
+          path: dist/
+
+      - name: Generate changelog from git log
+        id: changelog
+        run: |
+          # Find the previous tag to bound the changelog range.
+          CURRENT_TAG="${{ github.ref_name }}"
+          PREVIOUS_TAG=$(git tag --sort=-creatordate | grep -E '^v[0-9]+\.[0-9]+\.[0-9]+$' | sed -n '2p')
+
+          if [ -n "$PREVIOUS_TAG" ]; then
+            RANGE="${PREVIOUS_TAG}..${CURRENT_TAG}"
+            echo "Generating changelog from ${PREVIOUS_TAG} to ${CURRENT_TAG}"
+          else
+            RANGE="${CURRENT_TAG}"
+            echo "No previous tag found; listing all commits up to ${CURRENT_TAG}"
+          fi
+
+          # Build a markdown changelog grouped by conventional-commit type.
+          {
+            echo "## What's Changed"
+            echo ""
+            git log "${RANGE}" \
+              --pretty=format:"- %s ([%h](https://github.com/${{ github.repository }}/commit/%H)) — %an" \
+              --no-merges
+            echo ""
+            echo ""
+            if [ -n "$PREVIOUS_TAG" ]; then
+              echo "**Full Diff**: [\`${PREVIOUS_TAG}...${CURRENT_TAG}\`](https://github.com/${{ github.repository }}/compare/${PREVIOUS_TAG}...${CURRENT_TAG})"
+            fi
+          } > changelog.md
+
+          # Pass the multi-line body to subsequent steps via an output file.
+          echo "changelog_file=changelog.md" >> "$GITHUB_OUTPUT"
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@da05d552573ad5aba039eaac05058a918a7bf631 # v2.2.2
+        with:
+          tag_name: ${{ github.ref_name }}
+          name: Release ${{ github.ref_name }}
+          body_path: changelog.md
+          files: dist/*
+          draft: false
+          prerelease: ${{ contains(github.ref_name, '-') }}
