@@ -14,12 +14,19 @@ permissions:
 
 jobs:
   test:
-    name: Test
+    name: ${{ matrix.runner }} / Python ${{ matrix.python-version }}
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.11", "3.12", "3.13", "3.14"]
+        runner: [macos-latest, ubuntu-latest, windows-latest]
+        architecture: [x64]
     uses: ./.github/workflows/test.yml
     with:
-      python-version: "3.13"
-      runner: ubuntu-latest
-      build-distribution: true
+      python-version: ${{ matrix.python-version }}
+      runner: ${{ matrix.runner }}
+      architecture: ${{ matrix.architecture }}
+      build-distribution: ${{ matrix.runner == 'ubuntu-latest' && matrix.python-version == '3.13' }}
 
   prerelease:
     name: Prerelease to PyPI
