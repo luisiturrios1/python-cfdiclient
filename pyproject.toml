@@ -1,0 +1,88 @@
+[build-system]
+requires = ["setuptools>=78.1.1"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "cfdiclient"
+version = "1.6.2"
+description = "Cliente Python Web Service del SAT para la descarga masiva de CFDIs"
+readme = "README.md"
+requires-python = ">=3.9"
+license = "GPL-3.0-only"
+authors = [
+    { name = "Luis Iturrios", email = "luisiturrios1@gmail.com" },
+]
+dependencies = [
+    "lxml>=6.1.0",
+    "requests>=2.32.5",
+    "pycryptodome>=3.19.1",
+    "pyOpenSSL>=26.0.0",
+    "cryptography>=46.0.6",
+    "idna>=3.15",
+    "urllib3>=2.6.3",
+]
+classifiers = [
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Operating System :: OS Independent",
+]
+
+[project.optional-dependencies]
+dev = [
+    "atomicwrites",
+    "autopep8",
+    "build",
+    "importlib-metadata>=2.1.1",
+    "pygments>=2.20.0",
+    "pytest>=8.4.2",
+    "python-semantic-release>=10.5.3",
+    "setuptools>=78.1.1",
+    "twine",
+    "typing-extensions",
+    "wheel>=0.46.2",
+]
+
+[project.urls]
+Homepage = "https://github.com/luisiturrios1/python-cfdiclient"
+Repository = "https://github.com/luisiturrios1/python-cfdiclient"
+
+[tool.setuptools]
+include-package-data = true
+
+[tool.setuptools.packages.find]
+include = ["cfdiclient*"]
+
+[tool.setuptools.package-data]
+cfdiclient = ["*.xml"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+
+[tool.semantic_release]
+version_toml = ["pyproject.toml:project.version"]
+version_variables = ["cfdiclient/__init__.py:version"]
+build_command = "python -m pip install --upgrade build && python -m build"
+commit_message = "chore(release): v{version}"
+commit_parser = "conventional"
+tag_format = "v{version}"
+
+[tool.semantic_release.branches.master]
+match = "master"
+prerelease = false
+prerelease_token = "rc"
+
+[tool.semantic_release.commit_parser_options]
+minor_tags = ["feat"]
+patch_tags = ["fix", "perf"]
+other_allowed_tags = ["build", "chore", "ci", "docs", "style", "refactor", "test"]
+allowed_tags = ["feat", "fix", "perf", "build", "chore", "ci", "docs", "style", "refactor", "test"]
+default_bump_level = 0
+parse_squash_commits = true
+ignore_merge_commits = true
+
+[tool.semantic_release.publish]
+dist_glob_patterns = ["dist/*"]
+upload_to_vcs_release = true

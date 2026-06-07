@@ -44,7 +44,7 @@ descarga = solicitadescargaRecibidos.SolicitaDescargaRecibidos(fiel)
 
 # Recibidos
 solicitud = descarga.solicitar_descarga(
-    token, RFC, FECHA_INICIAL, FECHA_FINAL, rfc_receptor=RFC,tipo_solicitud='Metadata', estado_comprobante='Todos',
+    token, RFC, FECHA_INICIAL, FECHA_FINAL, rfc_receptor=RFC,tipo_solicitud='Metadata', estado_comprobante='Vigente',
 )
 
 

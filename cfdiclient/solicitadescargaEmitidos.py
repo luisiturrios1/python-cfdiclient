@@ -13,7 +13,7 @@ class SolicitaDescargaEmitidos(WebServiceRequest):
     def solicitar_descarga(
         self, token, rfc_solicitante, fecha_inicial, fecha_final,
         rfc_emisor=None, rfc_receptor=None, tipo_solicitud='CFDI',
-        tipo_comprobante=None, estado_comprobante=None,
+        tipo_comprobante=None, estado_comprobante='Vigente',
         rfc_a_cuenta_terceros=None, complemento=None, uuid=None
     ):
 
