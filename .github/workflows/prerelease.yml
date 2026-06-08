@@ -1,0 +1,75 @@
+name: Prerelease
+
+on:
+  pull_request:
+    branches:
+      - master
+    types:
+      - opened
+      - synchronize
+      - reopened
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    name: ${{ matrix.runner }} / Python ${{ matrix.python-version }}
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.11", "3.12", "3.13", "3.14"]
+        runner: [macos-latest, ubuntu-latest, windows-latest]
+        architecture: [x64]
+    uses: ./.github/workflows/test.yml
+    with:
+      python-version: ${{ matrix.python-version }}
+      runner: ${{ matrix.runner }}
+      architecture: ${{ matrix.architecture }}
+      build-distribution: ${{ matrix.runner == 'ubuntu-latest' && matrix.python-version == '3.13' }}
+
+  prerelease:
+    name: Prerelease to PyPI
+    if: github.event.pull_request.head.repo.full_name == github.repository
+    needs: test
+    runs-on: ubuntu-latest
+    environment: pypi-prerelease
+    concurrency:
+      group: ${{ github.workflow }}-pr-${{ github.event.pull_request.number }}
+      cancel-in-progress: false
+    permissions:
+      contents: write
+      id-token: write
+      pull-requests: read
+    env:
+      CI: "1"
+
+    steps:
+      - name: Checkout pull request branch
+        uses: actions/checkout@v6
+        with:
+          repository: ${{ github.event.pull_request.head.repo.full_name }}
+          ref: ${{ github.event.pull_request.head.ref }}
+          fetch-depth: 0
+          fetch-tags: true
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Create prerelease tag and distributions
+        id: prerelease
+        uses: python-semantic-release/python-semantic-release@v10.5.3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          prerelease: "true"
+          prerelease_token: "dev"
+          commit: "false"
+          tag: "true"
+          push: "true"
+          vcs_release: "false"
+          changelog: "false"
+
+      - name: Publish prerelease distributions to PyPI
+        if: steps.prerelease.outputs.released == 'true'
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          packages-dir: dist/
+          print-hash: true
