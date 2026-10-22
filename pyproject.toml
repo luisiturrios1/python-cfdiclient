@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "cfdiclient"
-version = "1.6.3"
+version = "2.0.0"
 description = "Cliente Python Web Service del SAT para la descarga masiva de CFDIs"
 readme = "README.md"
 requires-python = ">=3.10"
