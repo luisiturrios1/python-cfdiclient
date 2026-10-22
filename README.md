@@ -17,7 +17,8 @@ Servicio SAT de referencia:
 
 ## Requisitos
 
-- Python 3.9 o superior.
+- Python 3.10 o superior. Las versiones corregidas de Requests, urllib3,
+  pytest y setuptools requieren esta versión mínima de Python.
 - Certificado `.cer` y llave privada `.key` de la e.firma en formato DER.
 - Contraseña de la llave privada.
 - Acceso de red a los servicios del SAT.
