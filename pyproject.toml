@@ -1,5 +1,5 @@
 [build-system]
-requires = ["setuptools>=78.1.1"]
+requires = ["setuptools>=83.0.0"]
 build-backend = "setuptools.build_meta"
 
 [project]
@@ -7,21 +7,22 @@ name = "cfdiclient"
 version = "1.6.3"
 description = "Cliente Python Web Service del SAT para la descarga masiva de CFDIs"
 readme = "README.md"
-requires-python = ">=3.9"
+requires-python = ">=3.10"
 license = "GPL-3.0-only"
 authors = [
     { name = "Luis Iturrios", email = "luisiturrios1@gmail.com" },
 ]
 dependencies = [
     "lxml>=6.1.0",
-    "requests>=2.32.5",
+    "requests>=2.33.0",
     "pycryptodome>=3.19.1",
-    "pyOpenSSL>=26.0.0",
-    "cryptography>=46.0.6",
+    "pyOpenSSL>=26.4.0",
+    "cryptography>=50.0.0",
     "idna>=3.15",
-    "urllib3>=2.6.3",
+    "urllib3>=2.8.0",
 ]
 classifiers = [
+    "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
     "Programming Language :: Python :: 3.13",
@@ -36,9 +37,9 @@ dev = [
     "build",
     "importlib-metadata>=2.1.1",
     "pygments>=2.20.0",
-    "pytest>=8.4.2",
+    "pytest>=9.0.3",
     "python-semantic-release>=10.5.3",
-    "setuptools>=78.1.1",
+    "setuptools>=83.0.0",
     "twine",
     "typing-extensions",
     "wheel>=0.46.2",
